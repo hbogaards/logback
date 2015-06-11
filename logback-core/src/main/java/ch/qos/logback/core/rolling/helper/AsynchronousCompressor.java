@@ -19,17 +19,17 @@ import java.util.concurrent.Future;
 
 public class AsynchronousCompressor {
   Compressor compressor;
+  private final ExecutorService pool;
 
   public AsynchronousCompressor(Compressor compressor) {
     this.compressor = compressor;
+    this.pool = Executors.newFixedThreadPool(5);
   }
 
   public Future<?> compressAsynchronously(String nameOfFile2Compress,
       String nameOfCompressedFile, String innerEntryName) {
-    ExecutorService executor = Executors.newScheduledThreadPool(1);
-    Future<?> future = executor.submit(new CompressionRunnable(compressor,
+    Future<?> future = pool.submit(new CompressionRunnable(compressor,
         nameOfFile2Compress, nameOfCompressedFile, innerEntryName));
-    executor.shutdown();
     return future;
   }
 
